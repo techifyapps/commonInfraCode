@@ -1,8 +1,21 @@
+"use client";
+
 import React from 'react';
 import { Activity, Users, UserPlus, Database } from 'lucide-react';
 import { Card } from './ui/card';
 
-const StatsPanel = ({ stats }) => {
+interface Stats {
+  latency: number;
+  totalEvents: number;
+  newCustomers: number;
+  uniqueCustomers: number;
+}
+
+interface StatsPanelProps {
+  stats: Stats;
+}
+
+const StatsPanel: React.FC<StatsPanelProps> = ({ stats }) => {
   const statCards = [
     {
       icon: Activity,
