@@ -139,19 +139,19 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-50">
+    <div className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-950">
       {/* Header */}
-      <div className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
+      <div className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6">
         <div>
-          <h1 className="text-lg font-semibold text-slate-800">ECI Knowledge Assistant</h1>
-          <p className="text-xs text-slate-500">Ask me anything about ECI</p>
+          <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100">ECI Knowledge Assistant</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Ask me anything about ECI</p>
         </div>
         {conversation.messages.length > 0 && (
           <Button
             variant="ghost"
             size="sm"
             onClick={clearChat}
-            className="text-slate-600 hover:text-red-600 hover:bg-red-50"
+            className="text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Clear Chat
@@ -163,11 +163,11 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
       <ScrollArea className="flex-1 p-6" ref={scrollRef}>
         {conversation.messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-              <Bot className="w-8 h-8 text-blue-600" />
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-full flex items-center justify-center mb-4">
+              <Bot className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
-            <h2 className="text-xl font-semibold text-slate-800 mb-2">Welcome to ECI Chat Agent</h2>
-            <p className="text-slate-600 max-w-md">
+            <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-2">Welcome to ECI Chat Agent</h2>
+            <p className="text-slate-600 dark:text-slate-300 max-w-md">
               I'm here to help you understand the Enriched Customer Information system. Ask me about ECI overview, data integrity, APIs, troubleshooting, and more.
             </p>
           </div>
@@ -181,21 +181,21 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
                 }`}
               >
                 {message.role === 'assistant' && (
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center flex-shrink-0">
                     <Bot className="w-5 h-5 text-white" />
                   </div>
                 )}
                 <div
                   className={`group relative max-w-2xl rounded-lg p-4 ${
                     message.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-slate-800 border border-slate-200'
+                      ? 'bg-blue-600 dark:bg-blue-500 text-white'
+                      : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                   <div className="flex items-center justify-between mt-2">
                     <span className={`text-xs ${
-                      message.role === 'user' ? 'text-blue-100' : 'text-slate-400'
+                      message.role === 'user' ? 'text-blue-100 dark:text-blue-200' : 'text-slate-400 dark:text-slate-500'
                     }`}>
                       {formatTime(message.timestamp)}
                     </span>
@@ -205,8 +205,8 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
                         size="sm"
                         className={`opacity-0 group-hover:opacity-100 transition-opacity h-6 px-2 ${
                           message.role === 'user'
-                            ? 'text-blue-100 hover:text-white hover:bg-blue-700'
-                            : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                            ? 'text-blue-100 dark:text-blue-200 hover:text-white hover:bg-blue-700 dark:hover:bg-blue-600'
+                            : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                         }`}
                         onClick={() => copyMessage(message.content)}
                       >
@@ -216,7 +216,7 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
                   </div>
                 </div>
                 {message.role === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-slate-600 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
                     <User className="w-5 h-5 text-white" />
                   </div>
                 )}
@@ -224,14 +224,14 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
             ))}
             {isTyping && (
               <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center flex-shrink-0">
                   <Bot className="w-5 h-5 text-white" />
                 </div>
-                <div className="bg-white text-slate-800 border border-slate-200 rounded-lg p-4">
+                <div className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                    <span className="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                   </div>
                 </div>
               </div>
@@ -241,20 +241,20 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
       </ScrollArea>
 
       {/* Input Area */}
-      <div className="bg-white border-t border-slate-200 p-4">
+      <div className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-4">
         <div className="max-w-4xl mx-auto flex gap-3">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask about ECI..."
-            className="flex-1 min-h-[60px] max-h-[120px] resize-none"
+            className="flex-1 min-h-[60px] max-h-[120px] resize-none bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-700"
             disabled={isTyping}
           />
           <Button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="bg-blue-600 hover:bg-blue-700 text-white h-[60px] px-6"
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white h-[60px] px-6"
           >
             <Send className="w-5 h-5" />
           </Button>
