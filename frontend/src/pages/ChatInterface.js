@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { Moon, Sun } from 'lucide-react';
 import ConversationSidebar from '../components/ConversationSidebar';
 import ChatArea from '../components/ChatArea';
 import StatsPanel from '../components/StatsPanel';
+import { Button } from '../components/ui/button';
 import { initialStats } from '../utils/mock';
 
 const ChatInterface = () => {
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [stats, setStats] = useState(initialStats);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Load theme from localStorage on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('eci_theme');
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
 
   // Load conversations from localStorage on mount
   useEffect(() => {
@@ -53,6 +65,17 @@ const ChatInterface = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    if (!isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('eci_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('eci_theme', 'light');
+    }
+  };
+
   const createNewConversation = () => {
     const newConv = {
       id: Date.now().toString(),
@@ -93,7 +116,29 @@ const ChatInterface = () => {
   const currentConversation = conversations.find(c => c.id === currentConversationId);
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 relative">
+      {/* Theme Toggle Button */}
+      <div className="absolute top-4 right-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleTheme}
+          className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
+        >
+          {isDarkMode ? (
+            <>
+              <Sun className="w-4 h-4 mr-2" />
+              Light
+            </>
+          ) : (
+            <>
+              <Moon className="w-4 h-4 mr-2" />
+              Dark
+            </>
+          )}
+        </Button>
+      </div>
+
       {/* Left Sidebar - Conversations */}
       <ConversationSidebar
         conversations={conversations}

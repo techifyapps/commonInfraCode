@@ -11,6 +11,11 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef(null);
   const { toast } = useToast();
+  const currentConversationRef = useRef(null);
+
+  useEffect(() => {
+    currentConversationRef.current = conversation;
+  }, [conversation]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -18,7 +23,7 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
     }
   }, [conversation?.messages, isTyping]);
 
-  const simulateTyping = async (text, conversationId) => {
+  const simulateTyping = async (text, conversationId, currentMessages) => {
     setIsTyping(true);
     const words = text.split(' ');
     let currentText = '';
@@ -29,16 +34,16 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
       // Update the last message with typed text
       onUpdateConversation(conversationId, {
         messages: [
-          ...conversation.messages.slice(0, -1),
+          ...currentMessages.slice(0, -1),
           {
-            ...conversation.messages[conversation.messages.length - 1],
+            ...currentMessages[currentMessages.length - 1],
             content: currentText
           }
         ]
       });
 
       // Random delay between words for natural typing effect
-      await new Promise(resolve => setTimeout(resolve, 50 + Math.random() * 50));
+      await new Promise(resolve => setTimeout(resolve, 40 + Math.random() * 40));
     }
 
     setIsTyping(false);
@@ -54,21 +59,24 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
       timestamp: new Date().toISOString()
     };
 
+    const questionText = input.trim();
+    setInput('');
+
     // Update conversation title based on first message
+    const updatedMessages = [...conversation.messages, userMessage];
     const updates = {
-      messages: [...conversation.messages, userMessage]
+      messages: updatedMessages
     };
 
     if (conversation.messages.length === 0) {
-      updates.title = input.trim().slice(0, 50) + (input.trim().length > 50 ? '...' : '');
+      updates.title = questionText.slice(0, 50) + (questionText.length > 50 ? '...' : '');
     }
 
     onUpdateConversation(conversation.id, updates);
-    setInput('');
 
     // Get answer from RAG system
     setTimeout(() => {
-      const answer = findAnswer(input.trim());
+      const answer = findAnswer(questionText);
       const assistantMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -76,13 +84,14 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
         timestamp: new Date().toISOString()
       };
 
+      const messagesWithAssistant = [...updatedMessages, assistantMessage];
       onUpdateConversation(conversation.id, {
-        messages: [...conversation.messages, userMessage, assistantMessage]
+        messages: messagesWithAssistant
       });
 
       // Start typing simulation
       setTimeout(() => {
-        simulateTyping(answer, conversation.id);
+        simulateTyping(answer, conversation.id, messagesWithAssistant);
       }, 300);
     }, 500);
   };
@@ -108,6 +117,16 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
         messages: [],
         title: 'New Conversation'
       });
+    }
+  };
+
+  const formatTime = (timestamp) => {
+    try {
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return '';
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      return '';
     }
   };
 
@@ -178,7 +197,7 @@ const ChatArea = ({ conversation, onUpdateConversation }) => {
                     <span className={`text-xs ${
                       message.role === 'user' ? 'text-blue-100' : 'text-slate-400'
                     }`}>
-                      {new Date(message.timestamp).toLocaleTimeString()}
+                      {formatTime(message.timestamp)}
                     </span>
                     {message.content && (
                       <Button
