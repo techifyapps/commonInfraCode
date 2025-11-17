@@ -1,9 +1,33 @@
+"use client";
+
 import React from 'react';
 import { MessageSquare, Plus, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 
-const ConversationSidebar = ({
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+interface Conversation {
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: string;
+}
+
+interface ConversationSidebarProps {
+  conversations: Conversation[];
+  currentConversationId: string | null;
+  onSelectConversation: (id: string) => void;
+  onNewConversation: () => void;
+  onDeleteConversation: (id: string) => void;
+}
+
+const ConversationSidebar: React.FC<ConversationSidebarProps> = ({
   conversations,
   currentConversationId,
   onSelectConversation,
