@@ -1,12 +1,33 @@
+"use client";
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Copy, Trash2, User, Bot } from 'lucide-react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
-import { useToast } from '../hooks/use-toast';
-import { findAnswer } from '../utils/ragSystem';
+import { useToast } from '@/hooks/use-toast';
+import { findAnswer } from '@/lib/ragSystem';
 
-const ChatArea = ({ conversation, onUpdateConversation }) => {
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+interface Conversation {
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: string;
+}
+
+interface ChatAreaProps {
+  conversation?: Conversation;
+  onUpdateConversation: (id: string, updates: Partial<Conversation>) => void;
+}
+
+const ChatArea: React.FC<ChatAreaProps> = ({ conversation, onUpdateConversation }) => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef(null);
