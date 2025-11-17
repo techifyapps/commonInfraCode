@@ -1,0 +1,86 @@
+import React from 'react';
+import { MessageSquare, Plus, Trash2 } from 'lucide-react';
+import { Button } from './ui/button';
+import { ScrollArea } from './ui/scroll-area';
+
+const ConversationSidebar = ({
+  conversations,
+  currentConversationId,
+  onSelectConversation,
+  onNewConversation,
+  onDeleteConversation
+}) => {
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
+  };
+
+  return (
+    <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
+      {/* Header */}
+      <div className="p-4 border-b border-slate-200">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-slate-800">ECIChatAgent</h2>
+        </div>
+        <Button
+          onClick={onNewConversation}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Conversation
+        </Button>
+      </div>
+
+      {/* Conversations List */}
+      <ScrollArea className="flex-1">
+        <div className="p-2">
+          {conversations.map(conversation => (
+            <div
+              key={conversation.id}
+              className={`group relative p-3 mb-2 rounded-lg cursor-pointer transition-all ${
+                currentConversationId === conversation.id
+                  ? 'bg-blue-50 border border-blue-200'
+                  : 'hover:bg-slate-50 border border-transparent'
+              }`}
+              onClick={() => onSelectConversation(conversation.id)}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center mb-1">
+                    <MessageSquare className="w-4 h-4 text-slate-400 mr-2 flex-shrink-0" />
+                    <h3 className="text-sm font-medium text-slate-800 truncate">
+                      {conversation.title}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    {formatDate(conversation.createdAt)} • {conversation.messages.length} messages
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteConversation(conversation.id);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
+  );
+};
+
+export default ConversationSidebar;
