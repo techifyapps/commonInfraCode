@@ -1,0 +1,9 @@
+{
+  "name": "agent-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.600.0"
+  }
+}
