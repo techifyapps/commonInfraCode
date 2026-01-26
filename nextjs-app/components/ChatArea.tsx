@@ -144,10 +144,19 @@ const ChatArea: React.FC<ChatAreaProps> = ({ conversation, onUpdateConversation 
   };
 
   const handleLogout = () => {
+    // Clear all authentication tokens
     localStorage.removeItem('accessToken');
     localStorage.removeItem('idToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('userEmail');
+    
+    // Clear theme preference (optional - remove if you want to keep theme)
+    localStorage.removeItem('eci_theme');
+    
+    // Clear all localStorage data
+    localStorage.clear();
+    
+    // Redirect to login
     router.push('/login');
   };
 
