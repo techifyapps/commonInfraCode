@@ -29,12 +29,16 @@ const ChatInterface = () => {
   const [stats, setStats] = useState(initialStats);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Load theme from localStorage on mount
+  // Load theme from localStorage on mount (optional - can be removed if you want fresh theme on each login)
   useEffect(() => {
     const savedTheme = localStorage.getItem('eci_theme');
     if (savedTheme === 'dark') {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
+    } else {
+      // Default to light theme
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
