@@ -97,9 +97,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({ conversation, onUpdateConversation 
 
     onUpdateConversation(conversation.id, updates);
 
-    // Get answer from RAG system
-    setTimeout(() => {
-      const answer = findAnswer(questionText);
+    // Get answer from Bedrock Agent
+    setTimeout(async () => {
+      const answer = await queryBedrockAgent(questionText);
       const assistantMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
