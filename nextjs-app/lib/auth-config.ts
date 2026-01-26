@@ -14,7 +14,5 @@ export const cognitoOAuthConfig = {
 
 // Bedrock Agent Configuration
 export const bedrockAgentConfig = {
-  agentId: process.env.NEXT_PUBLIC_BEDROCK_AGENT_ID || "",
-  agentAliasId: process.env.NEXT_PUBLIC_BEDROCK_AGENT_ALIAS_ID || "TSTALIASID",
   region: "us-east-1",
 };
