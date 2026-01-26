@@ -143,6 +143,14 @@ const ChatArea: React.FC<ChatAreaProps> = ({ conversation, onUpdateConversation 
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('idToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userEmail');
+    router.push('/login');
+  };
+
   const formatTime = (timestamp) => {
     try {
       const date = new Date(timestamp);
