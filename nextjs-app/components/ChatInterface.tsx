@@ -38,34 +38,21 @@ const ChatInterface = () => {
     }
   }, []);
 
-  // Load conversations from localStorage on mount
+  // Load conversations - start fresh, no persistence
   useEffect(() => {
-    const saved = localStorage.getItem('eci_conversations');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setConversations(parsed);
-      if (parsed.length > 0 && !currentConversationId) {
-        setCurrentConversationId(parsed[0].id);
-      }
-    } else {
-      const initialConv: Conversation = {
-        id: Date.now().toString(),
-        title: 'New Conversation',
-        messages: [],
-        createdAt: new Date().toISOString()
-      };
-      setConversations([initialConv]);
-      setCurrentConversationId(initialConv.id);
-      localStorage.setItem('eci_conversations', JSON.stringify([initialConv]));
-    }
+    // Always start with a fresh conversation on login
+    const initialConv: Conversation = {
+      id: Date.now().toString(),
+      title: 'New Conversation',
+      messages: [],
+      createdAt: new Date().toISOString()
+    };
+    setConversations([initialConv]);
+    setCurrentConversationId(initialConv.id);
   }, []);
 
-  // Save conversations to localStorage whenever they change
-  useEffect(() => {
-    if (conversations.length > 0) {
-      localStorage.setItem('eci_conversations', JSON.stringify(conversations));
-    }
-  }, [conversations]);
+  // Do NOT save conversations to localStorage - keep them in memory only
+  // They will be cleared on logout or page refresh
 
   // Animate statistics
   useEffect(() => {
