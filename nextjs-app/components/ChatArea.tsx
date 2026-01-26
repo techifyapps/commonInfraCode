@@ -177,17 +177,28 @@ const ChatArea: React.FC<ChatAreaProps> = ({ conversation, onUpdateConversation 
           <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100">ECI Knowledge Assistant</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400">Ask me anything about ECI</p>
         </div>
-        {conversation.messages.length > 0 && (
+        <div className="flex items-center gap-2">
+          {conversation.messages.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearChat}
+              className="text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Clear Chat
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
-            onClick={clearChat}
-            className="text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+            onClick={handleLogout}
+            className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
           >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Clear Chat
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
           </Button>
-        )}
+        </div>
       </div>
 
       {/* Messages */}
