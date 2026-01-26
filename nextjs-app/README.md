@@ -120,10 +120,11 @@ nextjs-app/
 // lib/bedrockAgent.ts
 export async function queryBedrockAgent(query: string): Promise<string>
 ```
-- Uses access token from Cognito
-- Sends query to Bedrock Agent
+- Uses Cognito access token directly (Bearer token)
+- Calls REST API: `https://bedrock-agentcore.{region}.amazonaws.com/runtime/{arn}/invocations?qualifier=DEFAULT`
+- Request body: `{ "prompt": "user query", "session_id": "session-id" }`
 - Returns AI-generated response
-- Handles streaming responses
+- No AWS credentials needed!
 
 ### 3. Protected Routes
 - `/chat` - Requires authentication
