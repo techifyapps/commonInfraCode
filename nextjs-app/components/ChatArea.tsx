@@ -34,6 +34,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({ conversation, onUpdateConversation 
   const scrollRef = useRef(null);
   const { toast } = useToast();
   const currentConversationRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     currentConversationRef.current = conversation;
