@@ -162,13 +162,25 @@ Body (x-www-form-urlencoded):
 - redirect_uri: http://localhost:3000/callback
 ```
 
-### Bedrock Agent Runtime
-```typescript
-BedrockAgentRuntimeClient.send(InvokeAgentCommand)
-- agentId: from environment
-- agentAliasId: from environment
-- sessionId: generated per conversation
-- inputText: user query
+### Bedrock Agent Runtime API
+```
+POST https://bedrock-agentcore.us-east-1.amazonaws.com/runtime/{agent_arn}/invocations?qualifier=DEFAULT
+
+Headers:
+- Authorization: Bearer {cognito_access_token}
+- Content-Type: application/json
+
+Body:
+{
+  "prompt": "user query here",
+  "session_id": "unique-session-id"
+}
+
+Response:
+{
+  "completion": "AI agent response",
+  // ... other fields depending on your agent configuration
+}
 ```
 
 ## Troubleshooting
