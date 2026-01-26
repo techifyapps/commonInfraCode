@@ -56,11 +56,14 @@ ECIChatAgent is a Next.js 14 application with AWS Cognito authentication and AWS
 ### Bedrock Agent Configuration
 Create `.env.local` file:
 ```bash
-NEXT_PUBLIC_BEDROCK_AGENT_ID=your_agent_id_here
-NEXT_PUBLIC_BEDROCK_AGENT_ALIAS_ID=TSTALIASID
-NEXT_PUBLIC_AWS_ACCESS_KEY_ID=your_access_key_here
-NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY=your_secret_key_here
+# AWS Bedrock Agent ARN
+NEXT_PUBLIC_BEDROCK_AGENT_ARN=arn:aws:bedrock:us-east-1:123456789012:agent/ABCDEFGHIJ
+
+# AWS Region
 NEXT_PUBLIC_AWS_REGION=us-east-1
+
+# Note: No AWS credentials needed! 
+# The Cognito access token is used directly for authentication
 ```
 
 ## Installation
