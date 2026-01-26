@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Copy, Trash2, User, Bot } from 'lucide-react';
+import { Send, Copy, Trash2, User, Bot, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { findAnswer } from '@/lib/ragSystem';
+import { queryBedrockAgent } from '@/lib/bedrockAgent';
+import { useRouter } from 'next/navigation';
 
 interface Message {
   id: string;
