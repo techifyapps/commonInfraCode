@@ -141,13 +141,19 @@ export async function queryBedrockAgent(query: string): Promise<string>
 
 ## Security Considerations
 
+✅ **Current Implementation Benefits:**
+1. Uses Cognito access token directly (no AWS credentials in frontend)
+2. Token-based authentication for Bedrock Agent API
+3. Secure OAuth 2.0 flow
+4. No hardcoded AWS keys
+
 ⚠️ **Production Recommendations:**
-1. Use Cognito Identity Pool for AWS credentials (instead of environment variables)
-2. Implement token refresh mechanism
-3. Use httpOnly cookies for token storage (instead of localStorage)
-4. Enable Cognito MFA (Multi-Factor Authentication)
-5. Set up proper CORS policies
-6. Use AWS Secrets Manager for sensitive credentials
+1. Implement token refresh mechanism
+2. Use httpOnly cookies for token storage (instead of localStorage)
+3. Enable Cognito MFA (Multi-Factor Authentication)
+4. Set up proper CORS policies
+5. Configure rate limiting on Bedrock API
+6. Monitor and log API usage
 
 ## API Endpoints
 
