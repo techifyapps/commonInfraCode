@@ -1,8 +1,4 @@
 import { bedrockAgentConfig } from "@/lib/auth-config";
-import {
-  BedrockAgentRuntimeClient,
-  InvokeAgentCommand,
-} from "@aws-sdk/client-bedrock-agent-runtime";
 
 interface BedrockResponse {
   answer: string;
@@ -17,41 +13,44 @@ export async function queryBedrockAgent(query: string): Promise<string> {
       return "Authentication required. Please login again.";
     }
 
-    // Get AWS credentials from Cognito token
-    // Note: You'll need to configure Cognito Identity Pool for this
-    const client = new BedrockAgentRuntimeClient({
-      region: bedrockAgentConfig.region,
-      credentials: async () => {
-        // TODO: Implement AWS credentials from Cognito Identity Pool
-        // For now, using environment variables as fallback
-        return {
-          accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || "",
-          secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || "",
-        };
-      },
-    });
-
-    const command = new InvokeAgentCommand({
-      agentId: bedrockAgentConfig.agentId,
-      agentAliasId: bedrockAgentConfig.agentAliasId,
-      sessionId: generateSessionId(),
-      inputText: query,
-    });
-
-    const response = await client.send(command);
-
-    // Process the response stream
-    let answer = "";
-    if (response.completion) {
-      const decoder = new TextDecoder();
-      for await (const event of response.completion) {
-        if (event.chunk?.bytes) {
-          const text = decoder.decode(event.chunk.bytes);
-          answer += text;
-        }
-      }
+    // Get agent ARN from environment
+    const agentArn = process.env.NEXT_PUBLIC_BEDROCK_AGENT_ARN || "";
+    
+    if (!agentArn) {
+      return "Bedrock Agent ARN not configured. Please set NEXT_PUBLIC_BEDROCK_AGENT_ARN in .env.local";
     }
 
+    // Construct the Bedrock Agent Runtime API endpoint
+    const endpoint = `https://bedrock-agentcore.${bedrockAgentConfig.region}.amazonaws.com/runtime/${agentArn}/invocations?qualifier=DEFAULT`;
+
+    // Generate session ID
+    const sessionId = generateSessionId();
+
+    // Make REST API call to Bedrock Agent
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: query,
+        session_id: sessionId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Bedrock API error:", response.status, errorText);
+      return `Error: Unable to get response from Bedrock Agent (${response.status})`;
+    }
+
+    const data = await response.json();
+    
+    // Extract the answer from the response
+    // The exact response structure may vary - adjust based on your Bedrock Agent response
+    const answer = data.completion || data.output || data.response || JSON.stringify(data);
+    
     return answer || "No response received from the agent.";
   } catch (error: any) {
     console.error("Bedrock Agent error:", error);
