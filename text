@@ -1,0 +1,247 @@
+Perfect choice 👍
+Below is the **BMO-specific version** — framed exactly the way **Bank of Montreal** leadership, Enterprise Architecture, Security, and Digital Channels teams think.
+
+---
+
+# Proposal: Secure WhatsApp Banking for **Bank of Montreal (BMO)**
+
+**Extending BMO Digital Banking into Conversational Channels**
+
+---
+
+## 1. Executive Context (BMO Lens)
+
+BMO is already strong in:
+
+* Digital banking adoption
+* AI-driven customer insights
+* Omnichannel customer experience
+* Strong governance under OSFI & PIPEDA
+
+The next logical evolution is **controlled conversational banking**, where **WhatsApp becomes a secure engagement layer**, not a banking system.
+
+This proposal positions WhatsApp Banking as:
+
+* **An extension of BMO Mobile & Online Banking**
+* **A cost-optimization lever for contact centers**
+* **A customer-experience differentiator**, especially for retail, newcomers, and SMEs
+
+---
+
+## 2. Why WhatsApp Makes Sense *for BMO*
+
+### BMO-Specific Customer Segments
+
+* Newcomers to Canada
+* Small & Medium Businesses
+* Cross-border customers (US–Canada)
+* Retail customers preferring messaging over calls
+
+These segments already **trust WhatsApp** more than email or IVR.
+
+---
+
+## 3. Clear Positioning (Important for Risk Teams)
+
+> WhatsApp is **only a channel**
+> BMO remains the **sole authority** for authentication, authorization, and data access
+
+No data is stored or processed inside WhatsApp systems.
+
+---
+
+## 4. Use Cases Aligned to BMO Risk Appetite (Phase 1)
+
+**Read-only, high-volume, low-risk journeys**
+
+| Category | BMO Examples                      |
+| -------- | --------------------------------- |
+| Accounts | Balance, last 5 transactions      |
+| Cards    | Credit card due date, minimum due |
+| Loans    | Mortgage / personal loan EMI info |
+| Alerts   | “Did my payroll credit?”          |
+| Support  | Case status, FAQs                 |
+| Guidance | Decline reasons, next steps       |
+
+🚫 No fund transfers
+🚫 No beneficiary changes
+🚫 No profile edits
+
+---
+
+## 5. BMO-Ready Architecture
+
+```
+Customer (WhatsApp)
+   ↓
+WhatsApp Business API
+   ↓
+BMO API Gateway + WAF
+   ↓
+Identity & Access (IAM)
+   ↓
+BMO AI Banking Agent
+   ↓
+Core Banking / Cards / CRM
+```
+
+### Key Design Principle
+
+AI **never talks directly to core systems**
+All access goes through **existing BMO APIs & controls**
+
+---
+
+## 6. Authentication & Identity (Critical for BMO)
+
+### Step 1: WhatsApp Number Binding (One-Time)
+
+* Customer starts WhatsApp Banking
+* Receives **secure deep link**
+* Logs in via:
+
+  * BMO Mobile App **or**
+  * BMO Online Banking
+* WhatsApp number is:
+
+  * Verified
+  * Tokenized
+  * Bound to customer profile
+
+✔ Fully auditable
+✔ Revocable anytime
+✔ No credentials stored
+
+---
+
+### Step 2: Risk-Based Session Authentication
+
+| Query Type     | Authentication            |
+| -------------- | ------------------------- |
+| Balance        | Short-lived session token |
+| Transactions   | OTP / push notification   |
+| Card block     | App confirmation          |
+| Sensitive info | Full re-auth              |
+
+Sessions expire automatically (5–10 mins).
+
+---
+
+### Step 3: Strong Customer Authentication (SCA)
+
+* OTP (SMS / App)
+* Push approval via BMO Mobile
+* Device & behavioral checks
+* Velocity & anomaly detection
+
+**WhatsApp never authenticates the customer — BMO always does**
+
+---
+
+## 7. AI Agent Design (BMO-Controlled)
+
+### What the AI Agent Does
+
+* Interprets intent
+* Validates permissions
+* Calls **approved BMO APIs**
+* Masks sensitive data
+* Generates compliant responses
+
+### What the AI Agent Is NOT Allowed To Do
+
+❌ No database access
+❌ No credential handling
+❌ No autonomous decisions
+❌ No data storage
+
+AI = **Orchestration + Intelligence**, not authority
+
+---
+
+## 8. Security & Compliance (Mapped to BMO Standards)
+
+### Data Security
+
+* Zero PII stored in WhatsApp
+* Tokenized session references
+* End-to-end encrypted channel
+* Encrypted in transit & at rest (bank side)
+
+### Regulatory Alignment
+
+* OSFI B-10 (Third-Party Risk)
+* PIPEDA
+* PCI DSS
+* SOC 2
+* Full audit & traceability
+
+### Fraud Controls
+
+* Geo-fencing
+* Device fingerprinting
+* Rate limits
+* Fraud engine integration
+* Kill switch (immediate disable)
+
+---
+
+## 9. Operating Model (BMO Practicality)
+
+### Contact Center Integration
+
+* AI handles Tier-1
+* Seamless escalation to live agent
+* Conversation history preserved
+* Reduced average handle time (AHT)
+
+### Analytics
+
+* Cost-per-interaction reduction
+* Deflection rate from call center
+* CSAT improvement
+* Intent trend analysis
+
+---
+
+## 10. Rollout Plan (Low Risk, High Control)
+
+### Phase 1 – Internal & Pilot
+
+* BMO employees
+* Limited customer cohort
+* Read-only journeys
+* Security validation
+
+### Phase 2 – Controlled Launch
+
+* Retail + SME segments
+* Support & card journeys
+* Call center integration
+
+### Phase 3 – Advanced Experiences
+
+* Proactive alerts
+* Personalized insights
+* AI-assisted recommendations (non-selling first)
+
+---
+
+## 11. Why This Works for BMO
+
+✔ Aligns with BMO’s digital-first strategy
+✔ No new regulatory exposure
+✔ No core system risk
+✔ Clear ROI via call deflection
+✔ Bank-controlled AI (not vendor-led)
+
+---
+
+## 12. Board-Level Soundbite (Use This)
+
+> “This initiative does not change how BMO authenticates customers.
+> It changes **where** customers interact with us — securely, compliantly, and on their preferred channel.”
+
+---
+
+
