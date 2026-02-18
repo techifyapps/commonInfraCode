@@ -1,0 +1,455 @@
+Below is a **complete, structured Confluence-ready document** you can paste. It covers everything discussed: existing ECIF search, security concerns, hashed/tokenized architecture, address options, indexing, and query patterns. You can adjust terminology to match your organization.
+
+---
+
+# **ECI Secure Search Solution on AWS (PCI / PII Compliant Architecture)**
+
+---
+
+## **1. Executive Summary**
+
+The current ECIF customer data resides in **Amazon S3**, where PCI and PII fields are encrypted for compliance. However, this restricts wildcard, fuzzy, and partial searches. Business requires efficient search capabilities using:
+
+* Given Name
+* Last Name
+* Organization Name
+* Address (Street, City, Zip, Country)
+* Phone Number
+* Email ID
+
+This proposal introduces a **secure, searchable indexing architecture** in AWS that balances:
+
+* Search performance
+* Compliance and security
+* Scalability
+* Auditability
+* Flexibility
+
+The system ensures that sensitive data remains protected while enabling advanced search patterns.
+
+---
+
+## **2. Business Goals**
+
+* Enable wildcard, fuzzy, and partial search.
+* Maintain PCI and PII compliance.
+* Minimize plaintext storage of sensitive data.
+* Ensure scalability for large datasets (e.g., 90M+ customers).
+* Provide audit and traceability.
+
+---
+
+## **3. Existing Search Pattern Supported by ECIF**
+
+Currently, ECIF supports:
+
+### **3.1 Exact Match Searches**
+
+* Given Name and Last Name equality.
+* Phone number exact match.
+* Email exact match.
+
+### **3.2 Limited Partial Searches**
+
+* Some prefix-based searches.
+* No effective fuzzy or wildcard search.
+
+### **3.3 Current Limitations**
+
+* Encryption prevents:
+
+  * Wildcard search (`LIKE %text%`)
+  * Fuzzy match
+  * Lookalike search
+* High latency and limited flexibility.
+* Manual decrypt-and-scan workflows.
+
+---
+
+## **4. Party Search Criteria**
+
+The business search requirements include:
+
+### **Party Attributes**
+
+* Given Name 1
+* Given Name 2
+* Last Name
+* Organization Name
+* Address
+* Phone Number
+* Email ID
+
+### **Search Types**
+
+* Exact
+* Partial
+* Wildcard
+* Fuzzy / similarity
+* Combination search across multiple fields.
+
+---
+
+## **5. Proposed High-Level Architecture**
+
+### **5.1 System of Record**
+
+* Customer data stored encrypted in Amazon S3.
+
+### **5.2 Secure Search Index Layer**
+
+* PostgreSQL or Aurora PostgreSQL.
+* Only required searchable elements are stored.
+* Sensitive fields hashed or tokenized.
+
+### **5.3 Search API Layer**
+
+* Authenticated service.
+* Returns only customer identifiers.
+* Full records retrieved securely from S3.
+
+### **5.4 Ingestion Pipeline**
+
+* AWS Glue / ECS / Lambda.
+* Controlled decryption.
+* Tokenization and hashing.
+* Upsert to search index.
+
+---
+
+## **6. Security and Compliance Controls**
+
+* Encryption at rest using KMS.
+* TLS encryption in transit.
+* Private VPC deployment.
+* IAM-based authentication.
+* Audit logging and monitoring.
+* Minimal data retention.
+* No direct user access to database.
+* Role-based access.
+
+---
+
+## **7. Proposed Data Model**
+
+---
+
+## **7.1 Party Given Name Tables**
+
+### **Tables**
+
+* `party_givenname1`
+* `party_givenname2`
+
+### **Stored Fields**
+
+* Customer ID
+* Normalized name
+* Trigram indexed field.
+
+### **Index**
+
+* GIN trigram for fuzzy and wildcard.
+* B-tree for exact search.
+
+---
+
+## **7.2 Party Last Name Table**
+
+Similar structure.
+
+---
+
+## **7.3 Organization Name Table**
+
+Supports:
+
+* Wildcard
+* Lookalike search
+* Token-based indexing.
+
+---
+
+## **7.4 Phone Number Search Design**
+
+Phone numbers are highly sensitive.
+
+### **Storage Strategy**
+
+* Full phone number stored as **hashed value**.
+* Additional columns:
+
+  * First 3 digits
+  * Middle 3 digits
+  * Last 4 digits.
+
+This supports:
+
+* Partial search.
+* Prefix filtering.
+* Masked search.
+
+### **Indexes**
+
+* B-tree on hashed full number.
+* B-tree on each segment.
+
+---
+
+## **7.5 Email Search Design**
+
+### **Storage Strategy**
+
+Split email:
+
+| Column       | Description |
+| ------------ | ----------- |
+| email_left   | Before @    |
+| email_domain | After @     |
+| hashed_email | Full hash   |
+
+### **Indexes**
+
+* B-tree on hashed email.
+* Trigram on left portion.
+* B-tree on domain.
+
+Supports:
+
+* Exact search.
+* Domain search.
+* Partial username.
+
+---
+
+## **8. Address Search Strategy**
+
+Address is a high-risk PII element. Two options are proposed.
+
+---
+
+## **Option 1: Partial Plaintext Tokenized Design**
+
+### **Storage**
+
+#### Address Table
+
+* Customer ID
+* Street Number (hashed)
+* Street Name (raw, normalized)
+* Tokenized and normalized.
+
+#### City, Zipcode, Country Table
+
+Separate table:
+
+* City (hashed)
+* Zipcode (hashed)
+* Country (hashed).
+
+### **Security Advantage**
+
+* No full address stored.
+* Only minimal searchable components.
+
+### **Indexes**
+
+* B-tree on hashed city.
+* Trigram on street name.
+
+### **Search Flow**
+
+1. Hash city input.
+2. Filter candidate IDs.
+3. Apply wildcard trigram search on street name.
+
+---
+
+## **Option 2: Fully Hashed Address (Advanced Secure Approach)**
+
+### **Storage**
+
+* Street Number hashed.
+* Street Name converted into hashed trigrams.
+* City, Zip, Country hashed.
+
+### **Technique**
+
+* Tokenization.
+* Trigram generation.
+* HMAC hashing.
+
+### **Benefits**
+
+* No plaintext address stored.
+* Supports wildcard-like search.
+* Strong compliance.
+
+### **Trade-offs**
+
+* Increased storage.
+* Slightly more complex query logic.
+
+---
+
+## **9. Indexing Strategy**
+
+### **9.1 B-Tree Index**
+
+Used for:
+
+* Exact search.
+* Equality matches.
+
+### **9.2 GIN Trigram Index**
+
+Used for:
+
+* Wildcard.
+* Fuzzy.
+* Similarity search.
+
+### **9.3 Hybrid Indexing**
+
+Each search field optimized.
+
+---
+
+## **10. Performance Considerations**
+
+### **Advantages**
+
+* Faster search.
+* No full table scan.
+* Scalable for large datasets.
+
+### **Trade-offs**
+
+* Larger storage.
+* Slightly slower writes.
+
+### **Mitigation**
+
+* Batch ingestion.
+* Partitioning.
+* Read replicas.
+
+---
+
+## **11. Query Patterns**
+
+### **Example: Address Search (Option 1)**
+
+Input:
+
+* City: Mississauga
+* Address: 2435 batlefrdd%
+
+Query:
+
+```sql
+SELECT s.customer_id
+FROM street_table s
+JOIN city_table c
+ON s.customer_id = c.customer_id
+WHERE c.city_hash = :city_hash
+AND s.street_number_hash = :street_number_hash
+AND s.street_name ILIKE '%batlefrdd%';
+```
+
+---
+
+### **Example: Address Search (Option 2)**
+
+```sql
+SELECT customer_id
+FROM street_trigram_hash
+WHERE trigram_hash IN (:hashed_trigrams)
+GROUP BY customer_id
+HAVING COUNT(*) >= :threshold;
+```
+
+---
+
+### **Phone Search**
+
+```sql
+SELECT customer_id
+FROM phone_table
+WHERE first3 = :f
+AND last4 = :l;
+```
+
+---
+
+### **Email Search**
+
+```sql
+SELECT customer_id
+FROM email_table
+WHERE email_domain = :domain;
+```
+
+---
+
+## **12. Scalability Strategy**
+
+* Partition large tables.
+* Horizontal scaling.
+* AWS Aurora read replicas.
+* Caching for frequent queries.
+
+---
+
+## **13. Monitoring and Governance**
+
+* CloudWatch.
+* Query metrics.
+* Audit trails.
+* Anomaly detection.
+
+---
+
+## **14. Implementation Phases**
+
+### Phase 1
+
+* Proof of Concept.
+
+### Phase 2
+
+* Pilot rollout.
+
+### Phase 3
+
+* Full migration.
+
+---
+
+## **15. Risks and Mitigations**
+
+| Risk         | Mitigation               |
+| ------------ | ------------------------ |
+| PII exposure | Hashing and tokenization |
+| Performance  | Indexing                 |
+| Compliance   | Access controls          |
+| Cost         | Scalable architecture    |
+
+---
+
+## **16. Final Recommendation**
+
+Adopt:
+
+* Hybrid secure search.
+* Tokenized and hashed approach.
+* Aurora PostgreSQL with advanced indexing.
+
+This approach provides:
+
+* Security.
+* Scalability.
+* Performance.
+* Compliance.
+
+
